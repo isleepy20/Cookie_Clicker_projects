@@ -17,4 +17,5 @@ app.MapGet("/health", () => Results.Text("OK"));
 // If no other middleware handled the request, let the server run normally.
 // Log the startup message and run the app (this call blocks and starts the web host).
 Console.WriteLine("Starting web app on http://localhost:7700");
-app.Run();
+
+app.Run(); h
