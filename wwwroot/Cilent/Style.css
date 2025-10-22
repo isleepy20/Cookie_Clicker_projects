@@ -1,0 +1,6 @@
+/* Client copy of style.css (minimal for demo) */
+body{margin:0;font-family:Inter,Segoe UI,Arial;padding:18px;background:#fbf6ed}
+#app{max-width:1200px;margin:0 auto}
+#bigCookie{width:200px;height:200px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:64px;cursor:pointer}
+.cookieEffect{position:relative;animation:fadeUp .9s ease forwards}
+@keyframes fadeUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-24px)}}

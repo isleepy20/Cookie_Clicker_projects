@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Cookie Bakery — Ascension Tree (Client)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="Style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="title">
+        <h1 contenteditable="true" id="bakeryName">My Cookie Bakery (Client)</h1>
+        <div class="sub">Click to bake — ascend for Heavenly Chips</div>
+      </div>
+      <div class="top-stats">
+        <div class="stat">Cookies: <span id="cookieCount">0</span></div>
+        <div class="stat">CPS: <span id="cps">0</span></div>
+        <div class="stat">CPC: <span id="cpc">1</span></div>
+        <div class="stat">Heavenly Chips: <span id="hc">0</span></div>
+        <div class="stat small">Prestige Mult: x<span id="prestigeMult">1</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="left">
+        <div id="cookieArea">
+          <button id="bigCookie" title="Click (Space)">
+            <div id="cookieEmoji">🍪</div>
+          </button>
+          <div id="cookieEffects"></div>
+        </div>
+
+        <div class="controls">
+          <button id="buyCursor">Quick Buy 1</button>
+          <button id="achievementToggle">Toggle Achievements</button>
+          <button id="prestigeBtn">Ascend (Prestige)</button>
+          <button id="heavenTreeBtn" title="Open Ascension Tree">✨ Ascension Tree</button>
+
+          <div id="trillionProgress" class="progressContainer">
+            <div>Progress to next 1T: <span id="percentToTrillion">0%</span></div>
+            <div class="progressBar"><div id="progressFill"></div></div>
+          </div>
+        </div>
+
+        <div class="achievements" id="achievements">
+          <h3>Achievements</h3>
+          <div id="achList"></div>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="shop">
+          <h2>Buildings</h2>
+          <div id="buildingList"></div>
+        </div>
+
+        <div class="upgrades">
+          <h2>Upgrades</h2>
+          <div id="upgradeList"></div>
+        </div>
+
+        <div class="goldenArea" id="goldenArea">
+          <!-- golden cookie appears here -->
+        </div>
+
+        <div class="saveSlots">
+          <label>Slot: <input id="slotName" value="default"></label>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>Auto-save every 10s • Shortcuts: Space=click, P=ascend, G=golden (test)</small>
+    </footer>
+  </div>
+
+  <!-- Ascension Tree Modal -->
+  <div id="heavenModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modalContent">
+      <header class="modalHeader">
+        <h2>Ascension Tree</h2>
+        <div class="modalHeaderRight">
+          <div class="chipBalance">Chips: <span id="chipBalance">0</span></div>
+          <button id="closeHeaven">Close</button>
+        </div>
+      </header>
+
+      <div class="treeArea" id="treeArea">
+        <!-- Nodes will be injected here -->
+      </div>
+
+      <footer class="modalFooter">
+        <small>Heavenly Upgrades are permanent and persist across ascensions.</small>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

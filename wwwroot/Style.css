@@ -1,0 +1,708 @@
+/* style.css – includes ascension tree modal styling */
+:root{
+  --bg:#f1e6d6;
+  --panel:#fffdf8;
+  --muted:#6b6b6b;
+  --accent:#c97e2b;
+  --glass: rgba(255,255,255,0.6);
+  --shadow: 0 6px 20px rgba(0,0,0,0.08);
+  --heaven-bg: linear-gradient(180deg,#f9fbff,#eaf5ff);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fbf6ed,var(--bg));color:#222;padding:18px}
+#app{max-width:1200px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.title h1{margin:0;font-size:22px}
+.title .sub{font-size:12px;color:var(--muted)}
+.top-stats{display:flex;gap:12px;align-items:center}
+.stat{background:var(--panel);padding:8px 12px;border-radius:8px;box-shadow:var(--shadow);font-weight:600}
+.stat.small{font-weight:400;color:var(--muted)}
+
+main{display:flex;gap:18px}
+.left{flex:1}
+.right{width:360px}
+
+#cookieArea{display:flex;flex-direction:column;align-items:center;gap:12px}
+#bigCookie{
+  width:320px;height:320px;border-radius:50%;border:8px solid rgba(0,0,0,0.06);
+  background:radial-gradient(circle at 30% 25%, #fff9ec, #f6d08d 40%, #d29b4b 85%);
+  display:flex;align-items:center;justify-content:center;font-size:120px;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .08s cubic-bezier(.3,.8,.4,1);
+  position:relative;overflow:hidden;
+}
+#bigCookie:active{transform:scale(.98)}
+#cookieEmoji{pointer-events:none}
+#cookieEffects{position:relative;height:56px;width:320px;overflow:visible}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.controls button{padding:8px 12px;border-radius:8px;border:0;background:var(--panel);box-shadow:var(--shadow);cursor:pointer}
+#heavenTreeBtn{background:linear-gradient(180deg,#fff,#f0f8ff)}
+
+.shop, .upgrades{background:var(--panel);padding:10px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
+.shop h2, .upgrades h2{margin-top:0}
+
+.building, .upgrade{
+  display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg,#fff,#fcf0d6)
+}
+.building .meta, .upgrade .meta{flex:1;margin-left:10px}
+.price{font-weight:700;color:var(--accent)}
+.small{font-size:12px;color:var(--muted)}
+
+.achievements{margin-top:12px;background:var(--panel);padding:10px;border-radius:12px;box-shadow:var(--shadow)}
+.achItem{display:inline-block;padding:6px 8px;margin:4px;border-radius:8px;background:linear-gradient(180deg,#fff,#f7f4ef);box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+
+.goldenCookie{
+  position:absolute;right:12px;top:6px;width:64px;height:64px;border-radius:50%;background:linear-gradient(180deg,#ffd95e,#f2b400);
+  display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(0,0,0,0.2);cursor:pointer;animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+.saveSlots{margin-top:10px}
+#slotName{padding:6px;border-radius:6px;border:1px solid #ddd}
+
+/* progress bar */
+.progressContainer{width:100%;max-width:420px;margin-left:8px}
+.progressBar{width:100%;height:12px;background:rgba(0,0,0,0.06);border-radius:8px;margin-top:6px;overflow:hidden}
+#progressFill{height:100%;width:0%;background:linear-gradient(90deg,#ffd95e,#f2b400)}
+
+.tooltip{
+  position:absolute;background:#fff;padding:8px;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.12);z-index:50;font-size:13px
+}
+
+/* -------------------------------------------------
+   ASCENSION‑TREE MODAL – fully responsive & optimized
+   ------------------------------------------------- */
+
+/* 1️⃣ Dark translucent backdrop (unchanged) */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;                 /* JS toggles to flex           */
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(3px);
+  z-index:200;
+}
+
+/* 2️⃣ Modal window ---------------------------------------------------- */
+.modalContent{
+  /* Size never exceeds the viewport */
+  width:96vw;                   /* up to 96 % of the viewport width */
+  max-width:960px;              /* but never larger than 960 px      */
+  max-height:90vh;              /* never taller than 90 % of vh    */
+  background:var(--heaven-bg); /* ← use the variable that *does* exist */
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:0 20px 80px rgba(0,0,0,0.6);
+  border:1px solid var(--panel-glow);
+  overflow:hidden;              /* children will scroll inside      */
+  animation:modalIn .28s forwards;
+}
+
+/* 3️⃣ Header – keep the close button on the right */
+.modalHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+.modalHeader h2{
+  margin:0;
+  color:var(--accent);
+  font-size:1.6rem;
+}
+.modalHeaderRight{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* 4️⃣ Tree area – CSS grid that auto‑fits columns ---------------------- */
+.treeArea{
+  background:linear-gradient(180deg,
+            rgba(255,255,255,0.04),
+            rgba(240,248,255,0.07));
+  padding:16px;
+  border-radius:var(--radius);
+  height:calc(100% - 50px);     /* leave a little breathing room for header/footer */
+  overflow-y:auto;              /* vertical scroll when needed */
+  overflow-x:hidden;            /* never scroll horizontally */
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+  gap:18px 24px;                /* row & column gap */
+}
+
+/* 5️⃣ Tree nodes – compact but still readable ------------------------ */
+.treeNode{
+  background:linear-gradient(180deg,#2c2c48,#202040);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:var(--radius);
+  padding:14px;
+  text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
+  transition:transform .2s, box-shadow .2s;
+  min-height:auto;               /* height adapts to content */
+}
+.treeNode:hover{transform:translateY(-4px);}
+.treeNode.locked{
+  opacity:0.45;
+  filter:grayscale(30%);
+}
+.treeNode.purchased{
+  box-shadow:0 10px 30px rgba(120,200,255,0.35);
+  border-color:#87CEFA;
+}
+
+/* 6️⃣ Node inner parts – tighter spacing */
+.nodeIcon{
+  font-size:30px;
+  margin-bottom:6px;
+}
+.nodeName{
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:6px;
+  font-size:1.1rem;
+}
+.nodeCost{
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.nodeReq{
+  font-size:0.88rem;
+  color:var(--text-muted);
+  margin-bottom:8px;
+}
+.nodeBuy{
+  padding:6px 12px;
+  border:none;
+  border-radius:var(--radius);
+  background:#ffcc00;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+.nodeBuy:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+/* 7️⃣ Close‑animation (optional) */
+.modal.fadeOut{
+  animation:modalOut .24s forwards;
+}
+@keyframes modalOut{
+  from{opacity:1; transform:scale(1);}
+  to  {opacity:0; transform:scale(0.92);}
+}
+
+/* -------------------------------------------------
+   Small‑screen tweak – keep the modal a little tighter on phones
+   ------------------------------------------------- */
+@media (max-width:460px){
+  .modalContent{
+    padding:16px;
+  }
+  .modalHeader h2{
+    font-size:1.4rem;
+  }
+}
+/* -------------------------------------------------
+   GLOBAL VARIABLES & RESET
+   ------------------------------------------------- */
+:root{
+  --bg:#f1e6d6;
+  --panel:#fffdf8;
+  --muted:#6b6b6b;
+  --accent:#c97e2b;
+  --glass: rgba(255,255,255,0.6);
+  --shadow: 0 6px 20px rgba(0,0,0,0.08);
+  --heaven-bg: linear-gradient(180deg,#f9fbff,#eaf5ff);
+  --radius:10px;
+  --panel-glow: rgba(135, 206, 250, 0.3);
+  --text-muted: #a0a0a0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#fbf6ed,var(--bg));
+  color:#222;
+  padding:18px;
+}
+#app{max-width:1200px;margin:0 auto}
+
+/* -------------------------------------------------
+   HEADER & TOP STATS
+   ------------------------------------------------- */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.title h1{margin:0;font-size:22px}
+.title .sub{font-size:12px;color:var(--muted)}
+.top-stats{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.stat{
+  background:var(--panel);
+  padding:8px 12px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  font-weight:600;
+  white-space: nowrap;
+}
+.stat.small{font-weight:400;color:var(--muted)}
+
+/* -------------------------------------------------
+   MAIN LAYOUT
+   ------------------------------------------------- */
+main{
+  display:flex;
+  gap:18px;
+  flex-wrap: wrap;
+}
+.left{flex:1; min-width: 300px;}
+.right{width:360px; min-width: 300px;}
+
+/* -------------------------------------------------
+   COOKIE AREA
+   ------------------------------------------------- */
+#cookieArea{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+#bigCookie{
+  width:320px;height:320px;
+  border-radius:50%;
+  border:8px solid rgba(0,0,0,0.06);
+  background:radial-gradient(circle at 30% 25%,#fff9ec,#f6d08d 40%,#d29b4b 85%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:120px;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:transform .08s cubic-bezier(.3,.8,.4,1);
+  position:relative;
+  overflow:hidden;
+  user-select: none;
+}
+#bigCookie:active,
+#bigCookie.active{transform:scale(.98)}
+#cookieEmoji{pointer-events:none}
+#cookieEffects{
+  position:relative;
+  height:56px;
+  width:320px;
+  overflow:visible;
+}
+
+/* -------------------------------------------------
+   CONTROLS (buttons)
+   ------------------------------------------------- */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:8px;
+  align-items:center;
+}
+.controls button{
+  padding:8px 12px;
+  border-radius:var(--radius);
+  border:0;
+  background:var(--panel);
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  font-size: 14px;
+}
+.controls button:hover {
+  background: #f0e6d2;
+}
+#heavenTreeBtn{
+  background:linear-gradient(180deg,#fff,#f0f8ff);
+}
+
+/* -------------------------------------------------
+   SHOP & UPGRADE PANELS
+   ------------------------------------------------- */
+.shop,.upgrades{
+  background:var(--panel);
+  padding:10px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  margin-bottom:12px;
+}
+.shop h2,.upgrades h2{margin-top:0; margin-bottom: 12px;}
+
+/* BUILDING / UPGRADE ROWS */
+.building,.upgrade{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+  border-radius:var(--radius);
+  margin-bottom:8px;
+  background:linear-gradient(180deg,#fff,#fcf0d6);
+}
+.building .meta,.upgrade .meta{
+  flex:1;
+  margin-left:10px;
+}
+.price{
+  font-weight:700;
+  color:var(--accent);
+}
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* -------------------------------------------------
+   ACHIEVEMENTS PANEL
+   ------------------------------------------------- */
+.achievements{
+  margin-top:12px;
+  background:var(--panel);
+  padding:10px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.achievements h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+.achItem{
+  display:inline-block;
+  padding:6px 8px;
+  margin:4px;
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#fff,#f7f4ef);
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+  font-size: 12px;
+}
+
+/* -------------------------------------------------
+   GOLDEN COOKIE
+   ------------------------------------------------- */
+.goldenCookie{
+  position:absolute;
+  right:12px; top:6px;
+  width:64px;height:64px;
+  border-radius:50%;
+  background:linear-gradient(180deg,#ffd95e,#f2b400);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+  cursor:pointer;
+  animation:float 4s ease-in-out infinite;
+  z-index: 10;
+}
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+  100%{transform:translateY(0)}
+}
+
+/* -------------------------------------------------
+   SAVE SLOTS & PROGRESS
+   ------------------------------------------------- */
+.saveSlots{
+  margin-top:10px;
+}
+#slotName{
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  width: 120px;
+}
+
+.progressContainer{
+  width:100%;
+  max-width:420px;
+  margin-left:8px;
+}
+.progressBar{
+  width:100%;
+  height:12px;
+  background:rgba(0,0,0,0.06);
+  border-radius:8px;
+  margin-top:6px;
+  overflow:hidden;
+}
+#progressFill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ffd95e,#f2b400);
+  transition: width 0.3s ease;
+}
+
+/* -------------------------------------------------
+   TOOLTIP (used elsewhere in the game)
+   ------------------------------------------------- */
+.tooltip{
+  position:absolute;
+  background:#fff;
+  padding:8px;
+  border-radius:8px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+  z-index:50;
+  font-size:13px;
+}
+
+/* -------------------------------------------------
+   ASCENSION‑TREE MODAL – fully responsive & optimized
+   ------------------------------------------------- */
+
+/* 1️⃣ Dark translucent backdrop */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(3px);
+  z-index:200;
+}
+
+/* 2️⃣ Modal window – capped size for every device */
+.modalContent{
+  width:96vw;
+  max-width:960px;
+  max-height:90vh;
+  background:var(--heaven-bg);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:0 20px 80px rgba(0,0,0,0.6);
+  border:1px solid var(--panel-glow);
+  overflow:hidden;
+  animation:modalIn .28s forwards;
+}
+
+/* 3️⃣ Header */
+.modalHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.modalHeader h2{
+  margin:0;
+  color:var(--accent);
+  font-size:1.6rem;
+}
+.modalHeaderRight{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.chipBalance{
+  background: rgba(255,255,255,0.8);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* 4️⃣ Tree area – responsive CSS‑grid */
+.treeArea{
+  background:linear-gradient(180deg,
+            rgba(255,255,255,0.04),
+            rgba(240,248,255,0.07));
+  padding:16px;
+  border-radius:var(--radius);
+  height:calc(100% - 50px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+  gap:18px 24px;
+}
+
+/* 5️⃣ Tree nodes */
+.treeNode{
+  background:linear-gradient(180deg,#2c2c48,#202040);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:var(--radius);
+  padding:14px;
+  text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
+  transition:transform .2s, box-shadow .2s;
+  min-height:auto;
+  color: white;
+}
+.treeNode:hover:not(.locked):not(.purchased){
+  transform:translateY(-4px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+}
+.treeNode.locked{
+  opacity:0.45;
+  filter:grayscale(30%);
+}
+.treeNode.purchased{
+  box-shadow:0 10px 30px rgba(120,200,255,0.35);
+  border-color:#87CEFA;
+  background: linear-gradient(180deg,#3a3a68,#2a2a60);
+}
+
+/* 6️⃣ Node inner parts */
+.nodeIcon{
+  font-size:30px;
+  margin-bottom:6px;
+}
+.nodeName{
+  font-weight:700;
+  color:#ffcc00;
+  margin-bottom:6px;
+  font-size:1.1rem;
+}
+.nodeCost{
+  font-weight:700;
+  color:#ffcc00;
+  margin-bottom:8px;
+  font-size: 0.9rem;
+}
+.nodeReq{
+  font-size:0.88rem;
+  color:var(--text-muted);
+  margin-bottom:8px;
+  min-height: 2.5em;
+}
+.nodeBuy{
+  padding:6px 12px;
+  border:none;
+  border-radius:var(--radius);
+  background:#ffcc00;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+.nodeBuy:hover:not(:disabled) {
+  background: #ffd740;
+}
+.nodeBuy:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+/* 7️⃣ Optional close animation */
+.modal.fadeOut{
+  animation:modalOut .24s forwards;
+}
+@keyframes modalOut{
+  from{opacity:1; transform:scale(1);}
+  to  {opacity:0; transform:scale(0.92);}
+}
+
+/* -------------------------------------------------
+   Small‑screen tweaks – keep everything inside the viewport
+   ------------------------------------------------- */
+@media (max-width:768px){
+  main {
+    flex-direction: column;
+  }
+  .left, .right {
+    width: 100%;
+    min-width: auto;
+  }
+  .top-stats {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width:460px){
+  .modalContent{
+    padding:16px;
+  }
+  .modalHeader h2{
+    font-size:1.4rem;
+  }
+  #bigCookie {
+    width: 280px;
+    height: 280px;
+    font-size: 100px;
+  }
+  #cookieEffects {
+    width: 280px;
+  }
+}
+
+@media (max-width:380px){
+  .treeArea{
+    grid-template-columns:repeat(auto-fit, minmax(100px,1fr));
+    gap:10px 14px;
+  }
+  .treeNode{
+    padding:10px;
+  }
+  .nodeIcon{font-size:24px;}
+  .nodeName{font-size:0.92rem;}
+  .nodeCost{font-size:0.86rem;}
+  .nodeReq{font-size:0.76rem;}
+  .nodeBuy{padding:4px 8px; font-size:0.84rem;}
+}
+
+/* -------------------------------------------------
+   Animations (modal in) – keep at the very bottom
+   ------------------------------------------------- */
+@keyframes modalIn{
+  from{opacity:0; transform:scale(0.92);}
+  to{opacity:1; transform:scale(1);}
+}
+
+/* -------------------------------------------------
+   Additional fixes and enhancements
+   ------------------------------------------------- */
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+#closeHeaven {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+.modalFooter {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+footer {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
